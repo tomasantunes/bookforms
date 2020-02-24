@@ -16,42 +16,42 @@ def init():
 	db = connect_db()
 	c = db.cursor()
 
-	sql_posts_table = """ CREATE TABLE IF NOT EXISTS posts (
+	sql_books_table = """ CREATE TABLE IF NOT EXISTS books (
 							id integer PRIMARY KEY,
 							title text,
-							content text,
+							description text,
 							author integer,
-							date date
+							creation_date date
 						); """
 
-	c.execute(sql_posts_table)
+	c.execute(sql_books_table)
 
 @app.route("/")
 def home():
 	db = connect_db()
-	c = db.execute('SELECT * FROM posts')
+	c = db.execute('SELECT * FROM books')
 	rows = c.fetchall()
-	posts = []
+	books = []
 
 	for row in rows:
-		post = {
+		book = {
 			'title': row[1],
-			'content' : Markup(row[2]),
+			'description' : Markup(row[2]),
 			'author' : row[3],
-			'date' : datetime.datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
-			'comments' : [],
+			'creation_date' : datetime.datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
+			'chapters' : [],
 		}
 
 		db = connect_db()
-		c = db.execute('SELECT * FROM comments INNER JOIN posts on posts.id = comments.post_id;')
+		c = db.execute('SELECT * FROM books INNER JOIN chapters on books.id = chapters.book_id;')
 		comments = c.fetchall()
 
-		for c in comments:
-			post.comments.append(c)
+		for c in chapters:
+			book.chapters.append(c)
 
-		posts.append(post)
+		books.append(book)
 
-	return render_template("home.html", posts=posts)
+	return render_template("home.html", books=books)
 		
 @app.route("/add-post", methods=['POST'])
 def add_post():
