@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Bookforms</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome/css/all.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/easy.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/tiny-date-picker.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style1.css') }}">
+	<style>
+		.login {
+			width: 25%;
+		}
+
+		.register {
+			width: 25%;
+		}
+
+		.table {
+			width: 75%;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="register">
+				<form action="/add_post" method="post">
+					<h2>Home</h2>
+					{% for post in posts %}
+						<h2>{{ post.title }}</h2>
+						<small>{{ post.date }}</small>
+					    <p> {{ post.content }} </p>
+					{% endfor %}
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/tiny-date-picker.min.js') }}"></script>
+	<script>
+
+	</script>
+</body>
+</html>

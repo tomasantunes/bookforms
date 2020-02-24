@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Bookforms</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fontawesome/css/all.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style1.css') }}">
+	<style>
+	</style>
+</head>
+<body>
+	<!-- Side navigation -->
+	<div class="sidenav">
+		<a href="/">Book Information</a>
+		<a href="/add-chapter">Add chapter</a>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="register">
+				<h2>Bookforms</h2>
+				<small>Write a book one chapter at a time.</small>
+				<br><br>
+				{% for post in posts %}
+					<h2>{{ post.title }}</h2>
+					<small>{{ post.date }}</small>
+					<p> {{ post.content }} </p>
+				{% endfor %}
+
+				<form action="/save-book-info" method="post">
+
+					<label for="title-input">Title</label><br>
+					<input id="title-input" type="text" name="title"><br>
+					<label for="author-input">Author</label><br>
+					<input id="author-input" type="text" name="author"><br>
+					<label for="description-input">Description</label><br>
+					<textarea id="description-input" name="description"></textarea>
+					<br>
+					<div style="text-align: right;">
+						<button type="submit" id="save-btn">Save</button>
+					</div>
+
+				</form>
+				
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+
+		</div>
+	</div>
+	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
+	<script>
+
+	</script>
+</body>
+</html>
