@@ -18,9 +18,11 @@
 	<div class="container">
 		<h2>Books</h2>
 		{% for book in books %}
-			<h2><a href="/book-info/{{ book.id }}">{{ book.title }}</a></h2>
-			<small>{{ book.author }} {{ book.creation_date }}</small>
-			<p> {{ book.description }} </p>
+			<div class="book-list-item">
+				<h2><a href="/book-info/{{ book.id }}">{{ book.title }}</a></h2>
+				<small>{{ book.author }} {{ book.creation_date }}</small>
+				<p> {{ book.description }} </p>
+			</div>
 		{% endfor %}
 
 		<a href="/book-info">Create book</a>
