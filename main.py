@@ -21,7 +21,7 @@ def init():
 							title text,
 							description text,
 							author text,
-							creation_date date
+							date date
 						); """
 
 	c.execute(sql_books_table)
@@ -29,9 +29,8 @@ def init():
 	sql_chapters_table = """ CREATE TABLE IF NOT EXISTS chapters (
 							id integer PRIMARY KEY,
 							book_id integer,
-							content text,
-							author text,
-							creation_date date
+							chapter text,
+							date date
 						); """
 
 	c.execute(sql_chapters_table)
@@ -45,10 +44,11 @@ def books():
 
 	for row in rows:
 		book = {
+			'id': row[0],
 			'title': row[1],
 			'description' : Markup(row[2]),
 			'author' : row[3],
-			'creation_date' : datetime.datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
+			'date' : datetime.datetime.strptime(row[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
 			'chapters' : [],
 		}
 
@@ -70,6 +70,10 @@ def bookInfoNew():
 @app.route("/book-info/<book>")
 def bookInfoById(book):
 	return render_template("book-info.html", book=book)
+
+@app.route("/edit-chapter/<book>")
+def editChapter(book):
+	return render_template("edit-chapter.html", book=book)
 		
 @app.route("/save-book-info", methods=['POST'])
 def add_book():
@@ -81,7 +85,22 @@ def add_book():
 
 	if (title != "" and author != "" and description != ""):
 		db = connect_db()
-		db.execute('INSERT INTO books (title, author, description, creation_date) VALUES (?, ?, ?, ?)', [title, author, description, date])
+		db.execute('INSERT INTO books (title, author, description, date) VALUES (?, ?, ?, ?)', [title, author, description, date])
+		db.commit()
+		return redirect("/")
+	return redirect("/")
+
+@app.route("/save-chapter/<book>", methods=['POST'])
+def saveChapter(book):
+	book_id = book
+	title = request.form.get('title', "")
+	chapter = request.form.get('chapter', "")
+
+	date = datetime.datetime.now()
+
+	if (book_id != "" and title != "" and chapter != ""):
+		db = connect_db()
+		db.execute('INSERT INTO chapter (book_id, title, chapter, date) VALUES (?, ?, ?, ?)', [book_id, title, chapter, date])
 		db.commit()
 		return redirect("/")
 	return redirect("/")
