@@ -20,11 +20,21 @@ def init():
 							id integer PRIMARY KEY,
 							title text,
 							description text,
-							author integer,
+							author text,
 							creation_date date
 						); """
 
 	c.execute(sql_books_table)
+
+	sql_chapters_table = """ CREATE TABLE IF NOT EXISTS chapters (
+							id integer PRIMARY KEY,
+							book_id integer,
+							content text,
+							author text,
+							creation_date date
+						); """
+
+	c.execute(sql_chapters_table)
 
 @app.route("/")
 def books():
@@ -44,7 +54,7 @@ def books():
 
 		db = connect_db()
 		c = db.execute('SELECT * FROM books INNER JOIN chapters on books.id = chapters.book_id;')
-		comments = c.fetchall()
+		chapters = c.fetchall()
 
 		for c in chapters:
 			book.chapters.append(c)
@@ -53,11 +63,15 @@ def books():
 
 	return render_template("books.html", books=books)
 
+@app.route("/book-info")
+def bookInfoNew():
+	return render_template("book-info.html")
+
 @app.route("/book-info/<book>")
-def home(book):
+def bookInfoById(book):
 	return render_template("book-info.html", book=book)
 		
-@app.route("/add-book", methods=['POST'])
+@app.route("/save-book-info", methods=['POST'])
 def add_book():
 	title = request.form.get('title', "")
 	author = request.form.get('author', "")
@@ -65,12 +79,12 @@ def add_book():
 
 	date = datetime.datetime.now()
 
-	if (title != "" and content != ""):
+	if (title != "" and author != "" and description != ""):
 		db = connect_db()
-		db.execute('INSERT INTO books (title, author, description, date) VALUES (?, ?, ?, ?)', [title, author, description, date])
+		db.execute('INSERT INTO books (title, author, description, creation_date) VALUES (?, ?, ?, ?)', [title, author, description, date])
 		db.commit()
-		return redirect("/books")
-	return redirect("/books")
+		return redirect("/")
+	return redirect("/")
  
 if __name__ == "__main__":
 	init()
