@@ -16,34 +16,14 @@
 		<a href="/add-chapter">Add chapter</a>
 	</div>
 	<div class="container">
-		<div class="row">
-			<div class="register">
-				<h2>Bookforms</h2>
-				<small>Write a book one chapter at a time.</small>
-				<br><br>
+		<h2>Books</h2>
+		{% for book in books %}
+			<h2><a href="/book-info/{{ book.id }}">{{ book.title }}</a></h2>
+			<small>{{ book.author }} {{ book.date }}</small>
+			<p> {{ book.description }} </p>
+		{% endfor %}
 
-				<form action="/save-book-info" method="post">
-
-					<label for="title-input">Title</label><br>
-					<input id="title-input" type="text" name="title"><br>
-					<label for="author-input">Author</label><br>
-					<input id="author-input" type="text" name="author"><br>
-					<label for="description-input">Description</label><br>
-					<textarea id="description-input" name="description"></textarea>
-					<br>
-					<div style="text-align: right;">
-						<button type="submit" id="save-btn">Save</button>
-					</div>
-
-				</form>
-				
-			</div>
-		</div>
-	</div>
-	<div class="container">
-		<div class="row">
-
-		</div>
+		<a href="/book-info">Create book</a>
 	</div>
 	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>

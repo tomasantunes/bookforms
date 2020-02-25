@@ -27,7 +27,7 @@ def init():
 	c.execute(sql_books_table)
 
 @app.route("/")
-def home():
+def books():
 	db = connect_db()
 	c = db.execute('SELECT * FROM books')
 	rows = c.fetchall()
@@ -51,22 +51,26 @@ def home():
 
 		books.append(book)
 
-	return render_template("home.html", books=books)
+	return render_template("books.html", books=books)
+
+@app.route("/book-info/<book>")
+def home(book):
+	return render_template("book-info.html", book=book)
 		
-@app.route("/add-post", methods=['POST'])
-def add_post():
-	user_id = session['user_id']
+@app.route("/add-book", methods=['POST'])
+def add_book():
 	title = request.form.get('title', "")
-	content = request.form.get('content', "")
+	author = request.form.get('author', "")
+	description = request.form.get('description', "")
 
 	date = datetime.datetime.now()
 
 	if (title != "" and content != ""):
 		db = connect_db()
-		db.execute('INSERT INTO posts (title, content, author, date) VALUES (?, ?, ?, ?)', [title, content, user_id, date])
+		db.execute('INSERT INTO books (title, author, description, date) VALUES (?, ?, ?, ?)', [title, author, description, date])
 		db.commit()
-		return redirect("/home")
-	return redirect("/home")
+		return redirect("/books")
+	return redirect("/books")
  
 if __name__ == "__main__":
 	init()
