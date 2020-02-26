@@ -29,14 +29,14 @@ def init():
 	sql_chapters_table = """ CREATE TABLE IF NOT EXISTS chapters (
 							id integer PRIMARY KEY,
 							book_id integer,
+							title text,
 							chapter text,
 							date date
 						); """
 
 	c.execute(sql_chapters_table)
 
-@app.route("/")
-def books():
+def getBooksList():
 	db = connect_db()
 	c = db.execute('SELECT * FROM books')
 	rows = c.fetchall()
@@ -53,14 +53,26 @@ def books():
 		}
 
 		db = connect_db()
-		c = db.execute('SELECT * FROM books INNER JOIN chapters on books.id = chapters.book_id;')
+		c = db.execute('SELECT * FROM chapters INNER JOIN books on books.id = chapters.book_id;')
 		chapters = c.fetchall()
 
 		for c in chapters:
-			book.chapters.append(c)
+			chapter = {
+				'id': c[0],
+				'book_id': c[1],
+				'title' : c[2],
+				'chapter' : Markup(c[3]),
+				'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
+			}
+			book['chapters'].append(chapter)
 
 		books.append(book)
+	
+	return books
 
+@app.route("/")
+def books():
+	books = getBooksList()
 	return render_template("books.html", books=books)
 
 @app.route("/book-info")
@@ -69,11 +81,16 @@ def bookInfoNew():
 
 @app.route("/book-info/<book>")
 def bookInfoById(book):
-	return render_template("book-info.html", book=book)
+	books = getBooksList()
+	return render_template("book-info.html", book=book, books=books)
 
 @app.route("/edit-chapter/<book>")
 def editChapter(book):
 	return render_template("edit-chapter.html", book=book)
+
+@app.route("/edit-chapter/<book>/<chapter>")
+def editChapterById(book, chapter):
+	return render_template("edit-chapter.html", book=book, chapter=chapter)
 		
 @app.route("/save-book-info", methods=['POST'])
 def add_book():
@@ -100,7 +117,7 @@ def saveChapter(book):
 
 	if (book_id != "" and title != "" and chapter != ""):
 		db = connect_db()
-		db.execute('INSERT INTO chapter (book_id, title, chapter, date) VALUES (?, ?, ?, ?)', [book_id, title, chapter, date])
+		db.execute('INSERT INTO chapters (book_id, title, chapter, date) VALUES (?, ?, ?, ?)', [book_id, title, chapter, date])
 		db.commit()
 		return redirect("/")
 	return redirect("/")

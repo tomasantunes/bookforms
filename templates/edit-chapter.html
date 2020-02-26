@@ -24,7 +24,7 @@
 				{% if chapter is defined %}
 					<h4>{{ chapter.title }}</h4>
 				{% endif %}
-				<form action="/add-chapter" method="post">
+				<form action="/save-chapter/{{ book }}" method="post">
 
 					<label for="title-input">Title</label><br>
 					<input id="title-input" type="text" name="title"><br>

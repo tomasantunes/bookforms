@@ -13,7 +13,10 @@
 	<div class="sidenav">
 		<a href="/">Books</a>
 		<a href="/book-info">Book Information</a>
-		<a href="/edit-chapter/{{ book }}">Add chapter</a>
+		{% if book is defined %}
+			<a href="/edit-chapter/{{ book }}">Add chapter</a>
+		{% endif %}
+		
 	</div>
 	<div class="container">
 		<div class="row">
@@ -37,6 +40,18 @@
 
 				</form>
 				
+				{% if book is defined %}
+					{% for b in books %}
+						{% for chapter in b.chapters %}
+							<div class="chapter-list-item">
+								<h2><a href="/edit-chapter/{{ b.id }}">{{ chapter.title }}</a></h2>
+								<small>{{ chapter.date }}</small>
+							</div>
+						{% endfor %}
+					{% endfor %}
+				{% endif %}
+				
+
 			</div>
 		</div>
 	</div>
