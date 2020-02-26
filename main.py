@@ -64,6 +64,7 @@ def getBooksList():
 				'content' : Markup(c[3]),
 				'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
 			}
+			print(chapter)
 			book['chapters'].append(chapter)
 
 		books.append(book)
@@ -101,6 +102,22 @@ def getBookById(id):
 
 	return book
 
+def getChapterById(id):
+	db = connect_db()
+	query = db.execute('SELECT * FROM chapters WHERE id = ?', [id])
+	rows = query.fetchall()
+	c = rows[0]
+
+	chapter = {
+		'id': c[0],
+		'book_id': c[1],
+		'title' : c[2],
+		'content' : Markup(c[3]),
+		'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
+	}
+
+	return chapter
+
 @app.route("/")
 def books():
 	books = getBooksList()
@@ -113,9 +130,10 @@ def newBook():
 @app.route("/edit-book/<book>")
 def editBookById(book):
 	books = getBooksList()
+	print(books)
 	return render_template("edit-book.html", book=book, books=books)
 
-@app.route("/get-book")
+@app.route("/get-book", methods=['GET'])
 def getBookByIdRoute():
 	id = request.args.get('id', "")
 	book = getBookById(id)
@@ -125,9 +143,9 @@ def getBookByIdRoute():
 def getChapterByIdRoute():
 	id = request.args.get('id', "")
 	chapter = getChapterById(id)
-	return jsonify(book)
+	return jsonify(chapter)
 
-@app.route("/edit-chapter/<book>")
+@app.route("/new-chapter/<book>")
 def editChapter(book):
 	return render_template("edit-chapter.html", book=book)
 
