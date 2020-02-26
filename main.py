@@ -53,7 +53,7 @@ def getBooksList():
 		}
 
 		db = connect_db()
-		c = db.execute('SELECT * FROM chapters INNER JOIN books on books.id = chapters.book_id;')
+		c = db.execute('SELECT * FROM chapters INNER JOIN books on books.id = chapters.book_id WHERE books.id = ?;', [book['id']])
 		chapters = c.fetchall()
 
 		for c in chapters:
@@ -70,6 +70,40 @@ def getBooksList():
 	
 	return books
 
+def getBookById(id):
+	db = connect_db()
+	c = db.execute('SELECT * FROM books WHERE id = ?', [id])
+	rows = c.fetchall()
+	b = rows[0]
+	
+	print(id)
+	print(b)
+
+	book = {
+		'id':b[0],
+		'title': b[1],
+		'description' : Markup(b[2]),
+		'author' : b[3],
+		'date' : datetime.datetime.strptime(b[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
+		'chapters' : [],
+	}
+
+	db = connect_db()
+	c = db.execute('SELECT * FROM chapters INNER JOIN books on books.id = chapters.book_id WHERE books.id = ?;', [id])
+	chapters = c.fetchall()
+
+	for c in chapters:
+		chapter = {
+			'id': c[0],
+			'book_id': c[1],
+			'title' : c[2],
+			'chapter' : Markup(c[3]),
+			'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
+		}
+		book['chapters'].append(chapter)
+
+	return book
+
 @app.route("/")
 def books():
 	books = getBooksList()
@@ -83,6 +117,12 @@ def bookInfoNew():
 def bookInfoById(book):
 	books = getBooksList()
 	return render_template("book-info.html", book=book, books=books)
+
+@app.route("/get-book/")
+def getBookByIdRoute():
+	id = request.args.get('id', "")
+	book = getBookById(id)
+	return jsonify(book)
 
 @app.route("/edit-chapter/<book>")
 def editChapter(book):
