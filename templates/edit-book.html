@@ -11,11 +11,12 @@
 </head>
 <body>
 	<div id="app">
+		
 		<div class="sidenav">
 			<a href="/">Books</a>
 			<a href="/new-book">New Book</a>
 			{% if book is defined %}
-				<meta id="chapter-id" data-content="{{ chapter }}">
+				<meta id="book-id" data-content="{{book}}">
 				<a href="/edit-book/{{ book }}">Edit Book</a>
 				<a href="/edit-chapter/{{ book }}">Add chapter</a>
 			{% endif %}
@@ -26,39 +27,53 @@
 					<h2>Bookforms</h2>
 					<small>Write a book one chapter at a time.</small>
 					<br><br>
-					{% if chapter is defined %}
-						<h4>{{ chapter.title }}</h4>
-					{% endif %}
-					<form action="/save-chapter/{{ book }}" method="post" data-bind="with: chapter">
+
+					<form action="/save-edit-book" method="post" data-bind="with: book">
 
 						<label for="title-input">Title</label><br>
 						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
-						<label for="content-input">Chapter</label><br>
-						<textarea id="content-input" name="chapter" data-bind="textInput: content"></textarea>
+						<label for="author-input">Author</label><br>
+						<input id="author-input" type="text" name="author" data-bind="textInput: author"><br>
+						<label for="description-input">Description</label><br>
+						<textarea id="description-input" name="description" data-bind="textInput: description"></textarea>
 						<br>
 						<div style="text-align: right;">
+							<a href="/edit-chapter/{{ book }}" class="btn1">Add chapter</a>
 							<button type="submit" id="save-btn">Save</button>
 						</div>
 
 					</form>
 					
+					{% if book is defined %}
+						{% for b in books %}
+							{% for chapter in b.chapters %}
+								<div class="chapter-list-item">
+									<h2><a href="/edit-chapter/{{ b.id }}/{{ chapter.id }}">{{ chapter.title }}</a></h2>
+									<p>{{ chapter.content }}</p>
+									<small>{{ chapter.date }}</small>
+								</div>
+							{% endfor %}
+						{% endfor %}
+					{% endif %}
+					
+
 				</div>
 			</div>
 		</div>
-		<div class="container">
-			<div class="row">
+	</div>
+	<div class="container">
+		<div class="row">
 
-			</div>
 		</div>
 	</div>
 	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
 	<script>
+
 		function AppModelView() {
 			var self = this;
 			self.book = ko.observable();
-			self.chapter = ko.observable();
 
 			self.BookModel = function(b) {
 				var bm = this;
@@ -67,22 +82,12 @@
 				bm.description = ko.observable(b.description);
 			}
 
-			self.ChapterModel = function(c) {
-				var cm = this;
-				cm.title = ko.observable(c.title);
-				cm.content = ko.observable(c.content);
-				cm.date = ko.observable(c.date);
-			}
-
 			self.init = function() {
 				$.get("/get-book", {id: $('#book-id').data().content})
 				.done(function(data) {
+					console.log(data);
 					self.book(new self.BookModel(data));
-				});
-
-				$.get("/get-chapter", {id: $('#chapter-id').data().content})
-				.done(function(data) {
-					self.chapter(new self.ChapterModel(data));
+					console.log(self.book().author());
 				});
 			}
 			self.init();

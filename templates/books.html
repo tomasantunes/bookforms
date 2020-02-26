@@ -11,18 +11,21 @@
 </head>
 <body>
 	<div class="sidenav">
-		<a href="/">Books</a>
-		<a href="/book-info">Book Information</a>
-		{% if book is defined %}
-			<a href="/edit-chapter/{{ book }}">Add chapter</a>
-		{% endif %}
+		<div class="sidenav">
+			<a href="/">Books</a>
+			<a href="/new-book">New Book</a>
+			{% if book is defined %}
+				<a href="/edit-book/{{ book }}">Edit Book</a>
+				<a href="/edit-chapter/{{ book }}">Add chapter</a>
+			{% endif %}
+		</div>
 	</div>
 	<div class="container">
 		<div class="book-list">
 			<h2>Books</h2>
 			{% for book in books %}
 				<div class="book-list-item">
-					<h2><a href="/book-info/{{ book.id }}">{{ book.title }}</a></h2>
+					<h2><a href="/edit-book/{{ book.id }}">{{ book.title }}</a></h2>
 					<small>{{ book.author }} {{ book.date }}</small>
 					<p> {{ book.description }} </p>
 				</div>
@@ -30,7 +33,7 @@
 		</div>
 
 		
-		<a href="/book-info" class="btn1">Create book</a>
+		<a href="/new-book" class="btn1">Create book</a>
 	</div>
 	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>

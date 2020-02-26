@@ -11,14 +11,15 @@
 </head>
 <body>
 	<div id="app">
-		<meta id="book-id" data-content="{{book}}">
+		
 		<div class="sidenav">
 			<a href="/">Books</a>
-			<a href="/book-info">Book Information</a>
+			<a href="/new-book">New Book</a>
 			{% if book is defined %}
+				<meta id="book-id" data-content="{{book}}">
+				<a href="/edit-book/{{ book }}">Edit Book</a>
 				<a href="/edit-chapter/{{ book }}">Add chapter</a>
 			{% endif %}
-			
 		</div>
 		<div class="container">
 			<div class="row">
@@ -27,7 +28,7 @@
 					<small>Write a book one chapter at a time.</small>
 					<br><br>
 
-					<form action="/save-book-info" method="post" data-bind="with: book">
+					<form action="/save-book" method="post" data-bind="with: book">
 
 						<label for="title-input">Title</label><br>
 						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
@@ -41,20 +42,6 @@
 						</div>
 
 					</form>
-					
-					{% if book is defined %}
-						{% for b in books %}
-							{% for chapter in b.chapters %}
-								<div class="chapter-list-item">
-									<h2><a href="/edit-chapter/{{ b.id }}">{{ chapter.title }}</a></h2>
-									<p>{{ chapter.chapter }}</p>
-									<small>{{ chapter.date }}</small>
-								</div>
-							{% endfor %}
-						{% endfor %}
-					{% endif %}
-					
-
 				</div>
 			</div>
 		</div>
@@ -68,32 +55,6 @@
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
 	<script>
-
-		console.log($('#book-id').data().content);
-
-		function AppModelView() {
-			var self = this;
-			self.book = ko.observable();
-
-			self.BookModel = function(b) {
-				var bm = this;
-				bm.title = ko.observable(b.title);
-				bm.author = ko.observable(b.author);
-				bm.description = ko.observable(b.description);
-			}
-
-			self.init = function() {
-				$.get("/get-book", {id: $('#book-id').data().content})
-				.done(function(data) {
-					console.log(data);
-					self.book(new self.BookModel(data));
-					console.log(self.book().author());
-				});
-			}
-			self.init();
-		}
-
-		ko.applyBindings(new AppModelView(), document.getElementById("app"));
 	</script>
 </body>
 </html>

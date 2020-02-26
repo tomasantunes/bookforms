@@ -1,5 +1,10 @@
 @import url("grid.css");
 @import url("table.css");
+
+/**************
+  FONTS
+**************/
+
 @font-face {
     font-family: Open Sans;
     src: url(../fonts/OpenSans-Regular.ttf);
@@ -23,11 +28,21 @@
     font-weight: 300;
 }
 
+/**************
+  GENERAL
+**************/
+
 body {
 	margin: 0;
   font-family: 'Open Sans', Arial, Helvetica, sans-serif;
   background-color: #ccc;
 }
+
+.main {
+  margin-left: 160px; /* Same as the width of the sidebar */
+  padding: 0px 10px;
+}
+
 
 h2 {
   margin-bottom: 0px;
@@ -46,15 +61,6 @@ input {
   background-color: #fff;
   border: 1px solid #777;
   font-size: 20px;
-}
-
-button {
-	min-width: 120px;
-	min-height: 34px;
-	border: none;
-	background-color: #3091c1;
-	border-radius: 4px;
-	color: #fff;
 }
 
 .container {
@@ -76,6 +82,13 @@ button {
   float: right;
 }
 
+.clearfix {
+  clear: both;
+}
+
+/**************
+  TOP NAV
+**************/
 .top-nav {
   overflow: hidden;
   background-color: #333;
@@ -109,6 +122,10 @@ button {
   display: none;
 }
 
+/************
+AUTHOR PROFILE
+************/
+
 .author-div {
   padding: 15px;
   background-color: #ccc;
@@ -139,6 +156,10 @@ button {
   padding: 0 15px;
 }
 
+/*****************
+  SOCIAL ICONS
+*****************/
+
 .social-icons {
   float: right;
 }
@@ -147,15 +168,19 @@ button {
   width: 40px;
 }
 
-.clearfix {
-  clear: both;
-}
+/****************
+  FORMS
+****************/
 
 .form-control {
   width: 200px;
   border-radius: 4px;
   border: 1px solid #777;
 }
+
+/****************
+  LINKS
+****************/
 
 a {
   color: #3091c1;
@@ -177,6 +202,10 @@ a:visited {
   text-decoration: none;
 }
 
+/***************
+  INPUTS
+***************/
+
 #description-input, #chapter-input {
   width: 100%;
   height: 300px;
@@ -188,7 +217,10 @@ a:visited {
   font-size: 20px;
 }
 
-/* The sidebar menu */
+/**************
+  SIDENAV 
+**************/
+
 .sidenav {
   height: 100%;
   width: 160px;
@@ -200,7 +232,6 @@ a:visited {
   overflow-x: hidden;
 }
 
-/* The navigation menu links */
 .sidenav a {
   padding: 6px 8px 6px 16px;
   text-decoration: none;
@@ -219,16 +250,13 @@ a:visited {
   border-bottom-width: 2px;
 }
 
-/* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
   color: #f1f1f1;
 }
 
-/* Style page content */
-.main {
-  margin-left: 160px; /* Same as the width of the sidebar */
-  padding: 0px 10px;
-}
+/*************
+  BOOK LIST
+*************/
 
 .book-list {
   margin-bottom: 25px;
@@ -252,11 +280,48 @@ a:visited {
   color: white;
 }
 
-a.btn1 {
+/************
+  BUTTONS
+************/
+
+button {
+	min-width: 120px;
+	height: 50px;
+	border: none;
+	background-color: #3091c1;
   border-radius: 4px;
-  background-color: #444;
-  padding: 10px;
+  padding: 0;
+  padding-top: 1px;
   color: white;
+  font-size: 18px;
+  font-weight: bold;
+  outline: 0;
+  box-sizing: content-box;
+}
+
+button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+a.btn1 {
+  min-width: 120px;
+  height: 50px;
+  border: none;
+  background-color: #444;
+  border-radius: 4px;
+  padding: 10px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 1px;
+  box-sizing: content-box;
+}
+
+a.btn1:hover {
+  text-decoration: underline;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidebar (less padding and a smaller font size) */

@@ -30,7 +30,7 @@ def init():
 							id integer PRIMARY KEY,
 							book_id integer,
 							title text,
-							chapter text,
+							content text,
 							date date
 						); """
 
@@ -61,7 +61,7 @@ def getBooksList():
 				'id': c[0],
 				'book_id': c[1],
 				'title' : c[2],
-				'chapter' : Markup(c[3]),
+				'content' : Markup(c[3]),
 				'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
 			}
 			book['chapters'].append(chapter)
@@ -75,9 +75,6 @@ def getBookById(id):
 	c = db.execute('SELECT * FROM books WHERE id = ?', [id])
 	rows = c.fetchall()
 	b = rows[0]
-	
-	print(id)
-	print(b)
 
 	book = {
 		'id':b[0],
@@ -97,7 +94,7 @@ def getBookById(id):
 			'id': c[0],
 			'book_id': c[1],
 			'title' : c[2],
-			'chapter' : Markup(c[3]),
+			'content' : Markup(c[3]),
 			'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
 		}
 		book['chapters'].append(chapter)
@@ -109,19 +106,25 @@ def books():
 	books = getBooksList()
 	return render_template("books.html", books=books)
 
-@app.route("/book-info")
-def bookInfoNew():
-	return render_template("book-info.html")
+@app.route("/new-book")
+def newBook():
+	return render_template("new-book.html")
 
-@app.route("/book-info/<book>")
-def bookInfoById(book):
+@app.route("/edit-book/<book>")
+def editBookById(book):
 	books = getBooksList()
-	return render_template("book-info.html", book=book, books=books)
+	return render_template("edit-book.html", book=book, books=books)
 
-@app.route("/get-book/")
+@app.route("/get-book")
 def getBookByIdRoute():
 	id = request.args.get('id', "")
 	book = getBookById(id)
+	return jsonify(book)
+
+@app.route("/get-chapter")
+def getChapterByIdRoute():
+	id = request.args.get('id', "")
+	chapter = getChapterById(id)
 	return jsonify(book)
 
 @app.route("/edit-chapter/<book>")
@@ -132,7 +135,7 @@ def editChapter(book):
 def editChapterById(book, chapter):
 	return render_template("edit-chapter.html", book=book, chapter=chapter)
 		
-@app.route("/save-book-info", methods=['POST'])
+@app.route("/save-book", methods=['POST'])
 def add_book():
 	title = request.form.get('title', "")
 	author = request.form.get('author', "")
@@ -145,22 +148,23 @@ def add_book():
 		db.execute('INSERT INTO books (title, author, description, date) VALUES (?, ?, ?, ?)', [title, author, description, date])
 		db.commit()
 		return redirect("/")
-	return redirect("/")
+	else:
+		return "Submission Invalid"
 
 @app.route("/save-chapter/<book>", methods=['POST'])
 def saveChapter(book):
 	book_id = book
 	title = request.form.get('title', "")
-	chapter = request.form.get('chapter', "")
+	content = request.form.get('content', "")
 
 	date = datetime.datetime.now()
 
-	if (book_id != "" and title != "" and chapter != ""):
+	if (book_id != "" and title != "" and content != ""):
 		db = connect_db()
-		db.execute('INSERT INTO chapters (book_id, title, chapter, date) VALUES (?, ?, ?, ?)', [book_id, title, chapter, date])
+		db.execute('INSERT INTO chapters (book_id, title, content, date) VALUES (?, ?, ?, ?)', [book_id, title, content, date])
 		db.commit()
-		return redirect("/")
-	return redirect("/")
+		return redirect("/edit-book/" + book_id)
+	return redirect("/edit-book/" + book_id)
  
 if __name__ == "__main__":
 	init()
