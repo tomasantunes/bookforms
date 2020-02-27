@@ -21,7 +21,7 @@ def init():
 							title text,
 							description text,
 							author text,
-							date date
+							date text
 						); """
 
 	c.execute(sql_books_table)
@@ -31,7 +31,7 @@ def init():
 							book_id integer,
 							title text,
 							content text,
-							date date
+							date text
 						); """
 
 	c.execute(sql_chapters_table)
@@ -151,9 +151,26 @@ def editChapter(book):
 @app.route("/edit-chapter/<book>/<chapter>")
 def editChapterById(book, chapter):
 	return render_template("edit-chapter.html", book=book, chapter=chapter)
+
+@app.route("/update-chapter/", methods=['POST'])
+def updateChapter():
+	id = request.form.get('id', "")
+	book_id = request.form.get('book_id', "")
+	title = request.form.get('title', "")
+	content = request.form.get('content', "")
+
+	date = str(datetime.datetime.now())
+
+	if (id != "" and book_id != "" and title != "" and content != ""):
+		db = connect_db()
+		db.execute('UPDATE chapters SET title = ?, content = ? WHERE id = ?;', (title, content, id))
+		db.commit()
+		return redirect("/edit-chapter/" + book_id + "/" + id)
+	else:
+		return "Submission Invalid"
 		
-@app.route("/save-book", methods=['POST'])
-def add_book():
+@app.route("/add-book", methods=['POST'])
+def addBook():
 	title = request.form.get('title', "")
 	author = request.form.get('author', "")
 	description = request.form.get('description', "")
@@ -165,6 +182,23 @@ def add_book():
 		db.execute('INSERT INTO books (title, author, description, date) VALUES (?, ?, ?, ?)', [title, author, description, date])
 		db.commit()
 		return redirect("/")
+	else:
+		return "Submission Invalid"
+
+@app.route("/update-book", methods=['POST'])
+def updateBook():
+	id = request.form.get('id', "")
+	title = request.form.get('title', "")
+	author = request.form.get('author', "")
+	description = request.form.get('description', "")
+
+	date = str(datetime.datetime.now())
+
+	if (title != "" and author != "" and description != ""):
+		db = connect_db()
+		db.execute('UPDATE books SET title = ?, author = ?, description = ?, date = ? WHERE id = ?;', (title, content, id))
+		db.commit()
+		return redirect("/edit-book/" + id)
 	else:
 		return "Submission Invalid"
 

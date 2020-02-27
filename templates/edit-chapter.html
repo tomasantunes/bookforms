@@ -25,11 +25,11 @@
 		</div>
 		<div class="container">
 			<div class="row">
-				<div class="register">
+				<div>
 					<h2>Bookforms</h2>
 					<small>Write a book one chapter at a time.</small>
 					<br><br>
-					<form action="/save-chapter/{{ book }}" method="post" data-bind="with: chapter">
+					<form action="/update-chapter/{{ chapter }}" method="post" data-bind="with: chapter">
 
 						<label for="title-input">Title</label><br>
 						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
@@ -37,7 +37,7 @@
 						<textarea id="content-input" name="content" data-bind="textInput: content"></textarea>
 						<br>
 						<div style="text-align: right;">
-							<button type="submit" id="save-btn">Save</button>
+							<button type="button" id="save-btn" data-bind="click: updateChapter">Save</button>
 						</div>
 
 					</form>
@@ -69,9 +69,24 @@
 
 			self.ChapterModel = function(c) {
 				var cm = this;
+				cm.id = ko.observable(c.id);
+				cm.book_id = ko.observable(c.book_id);
 				cm.title = ko.observable(c.title);
 				cm.content = ko.observable(c.content);
 				cm.date = ko.observable(c.date);
+
+				cm.updateChapter = function() {
+					$.post("/update-chapter", { 
+						"id": cm.id(),
+						"book_id": cm.book_id(),
+						"title": cm.title(),
+						"content": cm.content(),
+						"date": cm.date() 
+					})
+					.done(function(data) {
+						alert("The chapter has been updated.");
+					});
+				}
 			}
 
 			self.init = function() {

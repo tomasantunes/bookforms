@@ -28,7 +28,7 @@
 					<small>Write a book one chapter at a time.</small>
 					<br><br>
 
-					<form action="/save-book" method="post" data-bind="with: book">
+					<form action="/update-book" method="post" data-bind="with: book">
 
 						<label for="title-input">Title</label><br>
 						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
@@ -40,7 +40,7 @@
 						<div style="text-align: right;">
 							<button type="button" class="btn1" data-bind="click: $root.exportPDF">Export PDF</button>
 							<a href="/new-chapter/{{ book }}" class="btn1">Add chapter</a>
-							<button type="submit" id="save-btn">Save</button>
+							<button type="button" id="save-btn" data-bind="click: updateBook">Save</button>
 						</div>
 
 					</form>
@@ -81,6 +81,7 @@
 
 			self.BookModel = function(b) {
 				var bm = this;
+				bm.id = ko.observable(b.id);
 				bm.title = ko.observable(b.title);
 				bm.author = ko.observable(b.author);
 				bm.description = ko.observable(b.description);
@@ -91,6 +92,21 @@
 						bm.chapters.push(new self.ChapterModel(c));
 					});
 				}
+
+				bm.updateBook = function() {
+					var chapters = [];
+					$.post("/update-book", { 
+						"id": bm.id(),
+						"title": bm.title(),
+						"author": bm.author(),
+						"description": bm.description(),
+						"chapters": ko.toJS(bm.chapters())
+					})
+					.done(function(data) {
+						alert("The book information has been updated.");
+					});
+				}
+
 				bm.init();
 			}
 
