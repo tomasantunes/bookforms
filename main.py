@@ -145,8 +145,8 @@ def getChapterByIdRoute():
 	return jsonify(chapter)
 
 @app.route("/new-chapter/<book>")
-def editChapter(book):
-	return render_template("edit-chapter.html", book=book)
+def newChapter(book):
+	return render_template("new-chapter.html", book=book)
 
 @app.route("/edit-chapter/<book>/<chapter>")
 def editChapterById(book, chapter):
@@ -202,7 +202,7 @@ def updateBook():
 	else:
 		return "Submission Invalid"
 
-@app.route("/save-chapter/<book>", methods=['POST'])
+@app.route("/new-chapter/<book>", methods=['POST'])
 def saveChapter(book):
 	book_id = book
 	title = request.form.get('title', "")
