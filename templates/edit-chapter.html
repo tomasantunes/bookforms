@@ -15,6 +15,7 @@
 			<a href="/">Books</a>
 			<a href="/new-book">New Book</a>
 			{% if book is defined %}
+				<meta id="book-id" data-content="{{ book }}">
 				{% if chapter is defined %}
 					<meta id="chapter-id" data-content="{{ chapter }}">
 				{% endif %}

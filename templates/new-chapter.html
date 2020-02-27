@@ -15,9 +15,6 @@
 			<a href="/">Books</a>
 			<a href="/new-book">New Book</a>
 			{% if book is defined %}
-				{% if chapter is defined %}
-					<meta id="chapter-id" data-content="{{ chapter }}">
-				{% endif %}
 				<a href="/edit-book/{{ book }}">Edit Book</a>
 				<a href="/new-chapter/{{ book }}">Add chapter</a>
 			{% endif %}
@@ -28,12 +25,12 @@
 					<h2>Bookforms</h2>
 					<small>Write a book one chapter at a time.</small>
 					<br><br>
-					<form action="/save-chapter/{{ book }}" method="post" data-bind="with: chapter">
+					<form action="/save-chapter/{{ book }}" method="post">
 
 						<label for="title-input">Title</label><br>
-						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
+						<input id="title-input" type="text" name="title"><br>
 						<label for="content-input">Chapter</label><br>
-						<textarea id="content-input" name="content" data-bind="textInput: content"></textarea>
+						<textarea id="content-input" name="content"></textarea>
 						<br>
 						<div style="text-align: right;">
 							<button type="submit" id="save-btn">Save</button>
@@ -54,40 +51,7 @@
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
 	<script>
-		function AppModelView() {
-			var self = this;
-			self.book = ko.observable();
-			self.chapter = ko.observable();
 
-			self.BookModel = function(b) {
-				var bm = this;
-				bm.title = ko.observable(b.title);
-				bm.author = ko.observable(b.author);
-				bm.description = ko.observable(b.description);
-			}
-
-			self.ChapterModel = function(c) {
-				var cm = this;
-				cm.title = ko.observable(c.title);
-				cm.content = ko.observable(c.content);
-				cm.date = ko.observable(c.date);
-			}
-
-			self.init = function() {
-				$.get("/get-book", {id: $('#book-id').data().content})
-				.done(function(data) {
-					self.book(new self.BookModel(data));
-				});
-
-				$.get("/get-chapter", {id: $('#chapter-id').data().content})
-				.done(function(data) {
-					self.chapter(new self.ChapterModel(data));
-				});
-			}
-			self.init();
-		}
-
-		ko.applyBindings(new AppModelView(), document.getElementById("app"));
 	</script>
 </body>
 </html>

@@ -16,7 +16,7 @@
 			<a href="/">Books</a>
 			<a href="/new-book">New Book</a>
 			{% if book is defined %}
-				<meta id="book-id" data-content="{{book}}">
+				<meta id="book-id" data-content="{{ book }}">
 				<a href="/edit-book/{{ book }}">Edit Book</a>
 				<a href="/new-chapter/{{ book }}">Add chapter</a>
 			{% endif %}
@@ -28,7 +28,7 @@
 					<small>Write a book one chapter at a time.</small>
 					<br><br>
 
-					<form action="/save-edit-book" method="post" data-bind="with: book">
+					<form action="/save-book" method="post" data-bind="with: book">
 
 						<label for="title-input">Title</label><br>
 						<input id="title-input" type="text" name="title" data-bind="textInput: title"><br>
@@ -38,7 +38,8 @@
 						<textarea id="description-input" name="description" data-bind="textInput: description"></textarea>
 						<br>
 						<div style="text-align: right;">
-							<a href="/edit-chapter/{{ book }}" class="btn1">Add chapter</a>
+							<button type="button" class="btn1" data-bind="click: $root.exportPDF">Export PDF</button>
+							<a href="/new-chapter/{{ book }}" class="btn1">Add chapter</a>
 							<button type="submit" id="save-btn">Save</button>
 						</div>
 
@@ -46,13 +47,15 @@
 					
 					{% if book is defined and books is defined %}
 						{% for b in books %}
-							{% for chapter in b.chapters %}
-								<div class="chapter-list-item">
-									<h2><a href="/edit-chapter/{{ b.id }}/{{ chapter.id }}">{{ chapter.title }}</a></h2>
-									<p>{{ chapter.content }}</p>
-									<small>{{ chapter.date }}</small>
-								</div>
-							{% endfor %}
+							{% if b.id|string() == book|string() %}
+								{% for chapter in b.chapters %}
+									<div class="chapter-list-item">
+										<h2><a href="/edit-chapter/{{ b.id }}/{{ chapter.id }}">{{ chapter.title }}</a></h2>
+										<p>{{ chapter.content }}</p>
+										<small>{{ chapter.date }}</small>
+									</div>
+								{% endfor %}
+							{% endif %}
 						{% endfor %}
 					{% endif %}
 					
@@ -68,6 +71,7 @@
 	</div>
 	<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/knockout.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jspdf.min.js') }}"></script>
 	<script src="{{ url_for('static', filename='js/easy.js') }}"></script>
 	<script>
 
@@ -80,14 +84,60 @@
 				bm.title = ko.observable(b.title);
 				bm.author = ko.observable(b.author);
 				bm.description = ko.observable(b.description);
+				bm.chapters = ko.observableArray();
+
+				bm.init = function() {
+					$.each(b.chapters, function(i, c) {
+						bm.chapters.push(new self.ChapterModel(c));
+					});
+				}
+				bm.init();
+			}
+
+			self.ChapterModel = function(c) {
+				var cm = this;
+				cm.title = ko.observable(c.title);
+				cm.content = ko.observable(c.content);
+				cm.date = ko.observable(c.date);
+			}
+
+			self.exportPDF = function() {
+				var doc = new jsPDF()
+
+				doc.setFontSize(24);
+				doc.text(self.book().title(), 10, 10);
+
+				doc.setFontSize(14);
+				doc.setFontType("italic");
+				doc.text(self.book().author(), 10, 20);
+
+				doc.setFontSize(18);
+				doc.setFontType("bold");
+				doc.text("Description:", 10, 30);
+				doc.setFontSize(14);
+				doc.setFontType("normal");
+				doc.text(self.book().description(), 10, 40);
+
+				var y = 50;
+				console.log(self.book().chapters());
+				$.each(self.book().chapters(), function(i, c) {
+					doc.setFontSize(24);
+					doc.setFontType("bold");
+					doc.text(c.title(), 10, y);
+					y += 10;
+					doc.setFontSize(14);
+					doc.setFontType("normal");
+					doc.text(c.content(), 10, y);
+					y += 10;
+				});
+				
+				doc.save(self.book().title() + '.pdf')
 			}
 
 			self.init = function() {
 				$.getJSON("/get-book", {id: $('#book-id').data().content})
 				.done(function(data) {
-					console.log(data);
 					self.book(new self.BookModel(data));
-					console.log(self.book().author());
 				});
 			}
 			self.init();

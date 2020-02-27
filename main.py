@@ -64,7 +64,6 @@ def getBooksList():
 				'content' : Markup(c[3]),
 				'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
 			}
-			print(chapter)
 			book['chapters'].append(chapter)
 
 		books.append(book)
@@ -87,17 +86,18 @@ def getBookById(id):
 	}
 
 	db = connect_db()
-	c = db.execute('SELECT * FROM chapters INNER JOIN books on books.id = chapters.book_id WHERE books.id = ?;', [id])
+	c = db.execute('SELECT * FROM chapters WHERE book_id = ?;', [id])
 	chapters = c.fetchall()
 
-	for c in chapters:
+	for ch in chapters:
 		chapter = {
-			'id': c[0],
-			'book_id': c[1],
-			'title' : c[2],
-			'content' : Markup(c[3]),
-			'date' : datetime.datetime.strptime(c[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
+			'id': ch[0],
+			'book_id': ch[1],
+			'title' : ch[2],
+			'content' : Markup(ch[3]),
+			'date' : datetime.datetime.strptime(ch[4], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d'),
 		}
+		print(chapter)
 		book['chapters'].append(chapter)
 
 	return book
@@ -130,7 +130,6 @@ def newBook():
 @app.route("/edit-book/<book>")
 def editBookById(book):
 	books = getBooksList()
-	print(books)
 	return render_template("edit-book.html", book=book, books=books)
 
 @app.route("/get-book", methods=['GET'])
