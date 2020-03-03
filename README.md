@@ -4,11 +4,13 @@ Write a book one chapter at a time.
 ## Build Instructions
 
 ### Ubuntu
+
 Run these commands:
-'''
+```
 pip install Flask
 python main.py
-'''
+```
+
 Go to http://localhost:5000
 
 ![Screenshot](https://i.imgur.com/fEpujso.png "Screenshot")
